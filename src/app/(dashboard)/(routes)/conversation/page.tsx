@@ -1,17 +1,25 @@
 'use client';
 
+import React from 'react';
 import * as z from 'zod';
+import axios from 'axios';
 import { MessageSquare } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import Heading from '@/components/heading';
 import { formSchema } from './constants';
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
+import { ChatCompletionMessageParam } from 'openai/resources/chat/index.mjs';
+import { Empty } from '@/components/empty';
+import { Heading } from '@/components/heading';
 
-const CoversationPage = () => {
+const ConversationPage = () => {
+  const router = useRouter();
+  const [messages, setMessages] = React.useState<ChatCompletionMessageParam[]>([]);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -22,7 +30,26 @@ const CoversationPage = () => {
   const isLoading = form.formState.isSubmitting;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+    try {
+      const userMessage: ChatCompletionMessageParam = {
+        role: 'user',
+        content: values.prompt,
+      };
+      const newMessages = [...messages, userMessage];
+
+      const response = await axios.post('/api/conversation', {
+        messages: newMessages,
+      });
+
+      setMessages((current) => [...current, userMessage, response.data]);
+
+      form.reset();
+    } catch (error) {
+      console.log(error);
+      // TODO: OPEN PRO MODAL
+    } finally {
+      router.refresh();
+    }
   };
 
   return (
@@ -61,11 +88,22 @@ const CoversationPage = () => {
               </Button>
             </form>
           </Form>
-          <div className="space-y-4 mt-4">Message Content</div>
+          <div className="space-y-4 mt-4">
+            {messages.length === 0 && !isLoading && (
+              <div>
+                <Empty label={''} />
+              </div>
+            )}
+            <div className="flex flex-col-reverse gap-y-4">
+              {messages.map((message) => (
+                <div key={message.content}>{message.content}</div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </>
   );
 };
 
-export default CoversationPage;
+export default ConversationPage;
