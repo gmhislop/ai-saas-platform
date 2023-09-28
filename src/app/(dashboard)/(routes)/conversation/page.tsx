@@ -6,15 +6,19 @@ import axios from 'axios';
 import { MessageSquare } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
+import { ChatCompletionMessageParam } from 'openai/resources/chat/index.mjs';
 
 import { formSchema } from './constants';
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
-import { ChatCompletionMessageParam } from 'openai/resources/chat/index.mjs';
 import { Empty } from '@/components/empty';
 import { Heading } from '@/components/heading';
+import { Loader } from '@/components/loader';
+import { UserAvatar } from '@/components/user-avatar';
+import { BotAvatar } from '@/components/bot-avatar';
+import { cn } from '@/lib/utils';
 
 const ConversationPage = () => {
   const router = useRouter();
@@ -66,13 +70,13 @@ const ConversationPage = () => {
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
-              className="rounded-lg border w-full p-4 px-3 md:px-6 focus-within:shadow-sm grid grid-cols-12 gap-2"
+              className="grid w-full grid-cols-12 gap-2 p-4 px-3 border rounded-lg md:px-6 focus-within:shadow-sm"
             >
               <FormField
                 name="prompt"
                 render={({ field }) => (
                   <FormItem className="col-span-12 lg:col-span-10">
-                    <FormControl className="m-0 p-0">
+                    <FormControl className="p-0 m-0">
                       <Input
                         className="border-0 outline-none focus-visible:ring-0 focus-visible:ring-transparant"
                         disabled={isLoading}
@@ -83,20 +87,34 @@ const ConversationPage = () => {
                   </FormItem>
                 )}
               />
-              <Button className="col-span-12 lg:col-span-2 w-full" disabled={isLoading}>
+              <Button className="w-full col-span-12 lg:col-span-2" disabled={isLoading}>
                 Generate
               </Button>
             </form>
           </Form>
-          <div className="space-y-4 mt-4">
+          <div className="mt-4 space-y-4">
+            {isLoading && (
+              <div className="items-center justify-center w-full p-8 rounded-lg bg-muted">
+                <Loader />
+              </div>
+            )}
             {messages.length === 0 && !isLoading && (
               <div>
-                <Empty label={''} />
+                <Empty label={'No conversation has started'} />
               </div>
             )}
             <div className="flex flex-col-reverse gap-y-4">
               {messages.map((message) => (
-                <div key={message.content}>{message.content}</div>
+                <div
+                  key={message.content}
+                  className={cn(
+                    'items-start flex w-full gap-x-8 rounded-lg p-8',
+                    message.role === 'user' ? 'bg-white border border-black/10' : 'bg-muted',
+                  )}
+                >
+                  {message.role === 'user' ? <UserAvatar /> : <BotAvatar />}
+                  <p className="text-sm">{message.content}</p>
+                </div>
               ))}
             </div>
           </div>

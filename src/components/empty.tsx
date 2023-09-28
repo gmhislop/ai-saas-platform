@@ -7,10 +7,11 @@ type EmptyProps = {
 
 export const Empty = ({ label }: EmptyProps) => {
   return (
-    <div className="h-full p-20 flex flex-col items-center justify-center">
+    <div className="flex flex-col items-center justify-center h-full p-20">
       <div className="relative h-72 w-72">
-        <Image src={'/empty.png'} fill alt="Empty" />
+        <Image src={'/empty.png'} fill alt="No conversation" />
       </div>
+      <p>{label}</p>
     </div>
   );
 };
