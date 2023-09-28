@@ -4,7 +4,7 @@ import React from 'react';
 import * as z from 'zod';
 import axios from 'axios';
 import ReactMarkDown from 'react-markdown';
-import { Code, Divide } from 'lucide-react';
+import { Code } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
