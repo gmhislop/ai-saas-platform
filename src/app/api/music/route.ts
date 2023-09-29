@@ -36,5 +36,4 @@ export async function POST(
         console.log('[MUSIC_ERROR]', error);
         return new NextResponse('Internal Server Error', { status: 500 });
     }
-
-}
+};
