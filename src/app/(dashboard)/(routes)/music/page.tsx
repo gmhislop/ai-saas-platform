@@ -3,11 +3,10 @@
 import React from 'react';
 import * as z from 'zod';
 import axios from 'axios';
-import { MessageSquare } from 'lucide-react';
+import { Music } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import { ChatCompletionMessageParam } from 'openai/resources/chat/index.mjs';
 
 import { formSchema } from './constants';
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form';
@@ -16,13 +15,10 @@ import { Button } from '@/components/ui/button';
 import { Empty } from '@/components/empty';
 import { Heading } from '@/components/heading';
 import { Loader } from '@/components/loader';
-import { UserAvatar } from '@/components/user-avatar';
-import { BotAvatar } from '@/components/bot-avatar';
-import { cn } from '@/lib/utils';
 
-const ConversationPage = () => {
+const MusicPage = () => {
   const router = useRouter();
-  const [messages, setMessages] = React.useState<ChatCompletionMessageParam[]>([]);
+  const [music, setMusic] = React.useState<string>();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -35,18 +31,11 @@ const ConversationPage = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const userMessage: ChatCompletionMessageParam = {
-        role: 'user',
-        content: values.prompt,
-      };
-      const newMessages = [...messages, userMessage];
+      setMusic(undefined);
 
-      const response = await axios.post('/api/conversation', {
-        messages: newMessages,
-      });
+      const response = await axios.post('/api/music', values);
 
-      setMessages((current) => [...current, userMessage, response.data]);
-
+      setMusic(response.data.audio);
       form.reset();
     } catch (error) {
       console.log(error);
@@ -59,11 +48,11 @@ const ConversationPage = () => {
   return (
     <>
       <Heading
-        title={'Conversation generation'}
-        description={'Our most advanced language model.'}
-        icon={MessageSquare}
-        iconColor="text-violet-500"
-        bgColor="text-violet-500/10"
+        title={'Music generation'}
+        description={'Our most advanced music model.'}
+        icon={Music}
+        iconColor="text-emerald-500"
+        bgColor="text-emerald-500/10"
       />
       <div className="px-4 lg:px-8">
         <div>
@@ -98,25 +87,12 @@ const ConversationPage = () => {
                 <Loader />
               </div>
             )}
-            {messages.length === 0 && !isLoading && (
+            {!music && !isLoading && (
               <div>
-                <Empty label={'No conversation has started'} />
+                <Empty label={'No music generated.'} />
               </div>
             )}
-            <div className="flex flex-col-reverse gap-y-4">
-              {messages.map((message) => (
-                <div
-                  key={message.content}
-                  className={cn(
-                    'items-start flex w-full gap-x-8 rounded-lg p-8',
-                    message.role === 'user' ? 'bg-white border border-black/10' : 'bg-muted',
-                  )}
-                >
-                  {message.role === 'user' ? <UserAvatar /> : <BotAvatar />}
-                  <p className="text-sm">{message.content}</p>
-                </div>
-              ))}
-            </div>
+            <div>Music will be generated here</div>
           </div>
         </div>
       </div>
@@ -124,4 +100,4 @@ const ConversationPage = () => {
   );
 };
 
-export default ConversationPage;
+export default MusicPage;
