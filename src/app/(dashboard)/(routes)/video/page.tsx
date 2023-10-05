@@ -15,8 +15,10 @@ import { Button } from '@/components/ui/button';
 import { Empty } from '@/components/empty';
 import { Heading } from '@/components/heading';
 import { Loader } from '@/components/loader';
+import { useProModal } from '@/hooks/use-pro-modal';
 
 const VideoPage = () => {
+  const proModal = useProModal();
   const router = useRouter();
   const [video, setVideo] = React.useState<string>();
 
@@ -37,9 +39,10 @@ const VideoPage = () => {
 
       setVideo(response.data[0]);
       form.reset();
-    } catch (error) {
-      console.log(error);
-      // TODO: OPEN PRO MODAL
+    } catch (error: any) {
+      if (error?.response?.status === 403) {
+        proModal.onOpen();
+      }
     } finally {
       router.refresh();
     }
