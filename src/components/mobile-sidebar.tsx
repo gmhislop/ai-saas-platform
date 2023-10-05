@@ -21,7 +21,7 @@ const MobileSidebar = ({ apiLimitCount }: MobileSidebarProps) => {
 
   return (
     <Sheet>
-      <SheetTrigger>
+      <SheetTrigger asChild>
         <Button variant="ghost" className="md:hidden" size="icon">
           <Menu />
         </Button>
