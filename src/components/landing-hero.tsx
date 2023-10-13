@@ -11,8 +11,8 @@ export const LandingHero = () => {
   return (
     <div className="space-y-5 font-bold text-center text-white py-36">
       <div className="space-y-5 text-4xl font-extrabold sm:text-5xl md:text-6xl lg:text-7xl">
-        <h1>TESTING!!!!!</h1>
         <h1>The Ultimate AI tool for</h1>
+        <h2 className="text-sm">By Giovanni Hislop</h2>
         <div className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
           <TypewriterComponenent
             options={{
