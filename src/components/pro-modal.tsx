@@ -2,6 +2,8 @@
 
 import React from 'react';
 import axios from 'axios';
+import { toast } from 'react-hot-toast';
+
 import { tools } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
@@ -29,7 +31,7 @@ export const ProModal = () => {
 
       window.location.href = (await response).data.url;
     } catch (error) {
-      console.error(error, 'STRIPE_CLIENT_ERROR');
+      toast.error('Something went wrong');
     } finally {
       setLoading(false);
     }
@@ -66,7 +68,13 @@ export const ProModal = () => {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button size={'lg'} variant={'premium'} className="w-full" onClick={onSubscribe}>
+            <Button
+              disabled={loading}
+              size={'lg'}
+              variant={'premium'}
+              className="w-full"
+              onClick={onSubscribe}
+            >
               Upgrade <Zap className="w-4 h-4 ml-2" fill="white" />
             </Button>
           </DialogFooter>
